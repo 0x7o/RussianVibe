@@ -1,4 +1,5 @@
 from transformers import AutoProcessor, AutoModelForVision2Seq
+from tqdm import tqdm
 from glob import glob
 from PIL import Image
 import json
@@ -13,10 +14,10 @@ input_dir = "images/"
 
 def get_caption(image_path: str) -> str:
     image = Image.open(image_path)
-    inputs = processor(text=f"<grounding>{prompt}", images=image, return_tensors="pt")
+    inputs = processor(text=f"<grounding>{prompt}", images=image, return_tensors="pt").to("cuda")
     generated_ids = model.generate(
         pixel_values=inputs["pixel_values"],
-        input_ids=inputs["input_ids"].cuda(),
+        input_ids=inputs["input_ids"],
         attention_mask=inputs["attention_mask"],
         image_embeds=None,
         image_embeds_position_mask=inputs["image_embeds_position_mask"],
@@ -29,7 +30,7 @@ def get_caption(image_path: str) -> str:
 
 
 if __name__ == "__main__":
-    for image_path in glob(os.path.join(input_dir, "*.jpg")):
+    for image_path in tqdm(glob(os.path.join(input_dir, "*.jpg"))):
         caption = get_caption(image_path)
 
         with open(image_path.replace(".jpg", ".json"), "w") as f:
