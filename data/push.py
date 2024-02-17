@@ -1,16 +1,20 @@
 from datasets import Dataset
 from glob import glob
 from PIL import Image
+from tqdm import tqdm
 import json
 import os
 
 data = {"image": [], "caption": []}
 input_dir = "images/"
 
-for image_path in glob(os.path.join(input_dir, "*.jpg")):
+for image_path in tqdm(glob(os.path.join(input_dir, "*.jpg"))):
     image = Image.open(image_path)
+    try:
+        data["caption"].append(json.loads(image_path.replace(".jpg", ".json"))["caption"])
+    except Exception as e:
+        print(e, image_path)
     data["image"].append(image)
-    data["caption"].append(json.loads(image_path.replace(".jpg", ".json"))["caption"])
 
 dataset = Dataset.from_dict(data)
 dataset.shuffle()
