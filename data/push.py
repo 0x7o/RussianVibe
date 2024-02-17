@@ -11,7 +11,8 @@ input_dir = "images/"
 for image_path in tqdm(glob(os.path.join(input_dir, "*.jpg"))):
     image = Image.open(image_path)
     try:
-        data["caption"].append(json.loads(image_path.replace(".jpg", ".json"))["caption"])
+        with open(image_path.replace(".jpg", ".json"), "r") as f:
+            data["caption"].append(json.loads(f.read())["caption"])
     except Exception as e:
         print(e, image_path)
     data["image"].append(image)
