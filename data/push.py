@@ -15,6 +15,7 @@ for image_path in tqdm(glob(os.path.join(input_dir, "*.jpg"))):
             data["caption"].append(json.loads(f.read())["caption"])
     except Exception as e:
         print(e, image_path)
+        continue
     data["image"].append(image)
 
 dataset = Dataset.from_dict(data)
