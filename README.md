@@ -1,5 +1,5 @@
 # Russian Vibe
-![Russian Vibe On Spaces](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-sm.svg)
+[![Open in Spaces](https://huggingface.co/datasets/huggingface/badges/resolve/main/open-in-hf-spaces-sm.svg)](https://hf.co/spaces/0x7o/RussianVibe-1.0)
 
 Fine-tuning Stable Diffusion XL to generate Russian corners.
 
