@@ -32,6 +32,10 @@ def get_caption(image_path: str) -> str:
 if __name__ == "__main__":
     for image_path in tqdm(glob(os.path.join(input_dir, "*.jpg"))):
         caption = get_caption(image_path)
+        json_file = image_path.replace(".jpg", ".json")
 
-        with open(image_path.replace(".jpg", ".json"), "w") as f:
+        if os.path.exists(json_file):
+            continue
+
+        with open(json_file, "w") as f:
             json.dump({"caption": caption}, f)

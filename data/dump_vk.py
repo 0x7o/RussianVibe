@@ -15,6 +15,10 @@ if not os.path.exists(output_dir):
 
 def download_image(image_url: str) -> None:
     r = requests.get(image_url)
+    file_name = os.path.join(output_dir, image_url.split("?")[0].split("/")[-1])
+
+    if os.path.exists(file_name):
+        return
 
     with open(
         os.path.join(output_dir, image_url.split("?")[0].split("/")[-1]), "wb"

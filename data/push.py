@@ -19,5 +19,5 @@ for image_path in tqdm(glob(os.path.join(input_dir, "*.jpg"))):
     data["image"].append(image)
 
 dataset = Dataset.from_dict(data)
-dataset.shuffle()
+dataset = dataset.shuffle()
 dataset.push_to_hub("0x7o/RussianVibe-data")
