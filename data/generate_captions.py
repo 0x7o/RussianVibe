@@ -12,7 +12,8 @@ input_dir = "images/"
 
 
 def worker(device_id: int, image_paths: list):
-    model = AutoModelForVision2Seq.from_pretrained("microsoft/kosmos-2-patch14-224").to(f"cuda:{device_id}")
+    torch.cuda.set_device(device_id)
+    model = AutoModelForVision2Seq.from_pretrained("microsoft/kosmos-2-patch14-224").cuda()
     processor = AutoProcessor.from_pretrained("microsoft/kosmos-2-patch14-224")
 
     for image_path in tqdm(image_paths, desc=f"Device {device_id}"):

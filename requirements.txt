@@ -4,3 +4,4 @@ tqdm
 transformers
 pillow
 datasets
+torch
