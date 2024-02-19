@@ -1,25 +1,38 @@
 from transformers import AutoProcessor, AutoModelForVision2Seq
-from tqdm import tqdm
+from multiprocessing import Process
 from glob import glob
+from tqdm import tqdm
 from PIL import Image
 import json
 import os
-
-model = AutoModelForVision2Seq.from_pretrained("microsoft/kosmos-2-patch14-224").cuda()
-processor = AutoProcessor.from_pretrained("microsoft/kosmos-2-patch14-224")
+import torch
 
 prompt = "Describe this image in detail:"
 input_dir = "images/"
 
 
-def get_caption(image_path: str) -> str:
+def worker(device_id: int, image_paths: list):
+    torch.cuda.set_device(device_id)
+    model = AutoModelForVision2Seq.from_pretrained("microsoft/kosmos-2-patch14-224").cuda()
+    processor = AutoProcessor.from_pretrained("microsoft/kosmos-2-patch14-224")
+
+    for image_path in tqdm(image_paths, desc=f"Device {device_id}"):
+        json_file = image_path.replace(".jpg", ".json")
+
+        if os.path.exists(json_file):
+            continue
+
+        with open(json_file, "w") as f:
+            json.dump({"caption": get_caption(image_path, model, processor)}, f)
+
+
+def get_caption(image_path: str, model, processor) -> str:
     image = Image.open(image_path)
     inputs = processor(text=f"<grounding>{prompt}", images=image, return_tensors="pt").to("cuda")
     generated_ids = model.generate(
         pixel_values=inputs["pixel_values"],
         input_ids=inputs["input_ids"],
         attention_mask=inputs["attention_mask"],
-        image_embeds=None,
         image_embeds_position_mask=inputs["image_embeds_position_mask"],
         use_cache=True,
         max_new_tokens=128,
@@ -30,11 +43,15 @@ def get_caption(image_path: str) -> str:
 
 
 if __name__ == "__main__":
-    for image_path in tqdm(glob(os.path.join(input_dir, "*.jpg"))):
-        json_file = image_path.replace(".jpg", ".json")
+    num_gpus = torch.cuda.device_count()
+    image_paths = glob(os.path.join(input_dir, "*.jpg"))
+    split_image_paths = [image_paths[i::num_gpus] for i in range(num_gpus)]
 
-        if os.path.exists(json_file):
-            continue
+    processes = []
+    for i in range(num_gpus):
+        p = Process(target=worker, args=(i, split_image_paths[i]))
+        p.start()
+        processes.append(p)
 
-        with open(json_file, "w") as f:
-            json.dump({"caption": get_caption(image_path)}, f)
+    for p in processes:
+        p.join()
