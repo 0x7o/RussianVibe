@@ -27,7 +27,7 @@ Download images from VK publics into one folder:
 ```bash
 $ VK_TOKEN=... python3 data/dump_vk.py
 ```
-Then generate photo captions using the [Kosmos-2](https://huggingface.co/microsoft/kosmos-2-patch14-224) LLM:
+Then generate photo captions using the [Kosmos-2](https://huggingface.co/microsoft/kosmos-2-patch14-224) LLM (Note: This code requires Nvidia GPUs with at least 8 GB of video memory to run):
 ```bash
 $ python3 data/generate_captions.py
 ```

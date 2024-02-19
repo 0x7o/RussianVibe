@@ -48,6 +48,7 @@ if __name__ == "__main__":
     split_image_paths = [image_paths[i::num_gpus] for i in range(num_gpus)]
 
     processes = []
+
     for i in range(num_gpus):
         p = Process(target=worker, args=(i, split_image_paths[i]))
         p.start()
