@@ -13,8 +13,8 @@ def gen():
         with Image.open(image_path) as image:
             data = {}
             with open(image_path.replace(".jpg", ".json"), "r") as f:
-                data["caption"].append(json.loads(f.read())["caption"])
-            data["image"].append(image)
+                data["caption"] = json.loads(f.read())["caption"]
+            data["image"] = image
             yield data
 
 
