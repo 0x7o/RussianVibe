@@ -7,16 +7,15 @@ import os
 
 data = {"image": [], "caption": []}
 input_dir = "images/"
-
 for image_path in tqdm(glob(os.path.join(input_dir, "*.jpg"))):
-    image = Image.open(image_path)
     try:
-        with open(image_path.replace(".jpg", ".json"), "r") as f:
-            data["caption"].append(json.loads(f.read())["caption"])
+        with Image.open(image_path) as image:
+            with open(image_path.replace(".jpg", ".json"), "r") as f:
+                data["caption"].append(json.loads(f.read())["caption"])
+            data["image"].append(image.copy())
     except Exception as e:
         print(e, image_path)
         continue
-    data["image"].append(image)
 
 dataset = Dataset.from_dict(data)
 dataset = dataset.shuffle()
