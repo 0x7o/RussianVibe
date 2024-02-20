@@ -11,11 +11,15 @@ input_dir = "images/"
 def gen():
     for image_path in tqdm(glob(os.path.join(input_dir, "*.jpg"))):
         with Image.open(image_path) as image:
-            data = {}
-            with open(image_path.replace(".jpg", ".json"), "r") as f:
-                data["caption"] = json.loads(f.read())["caption"]
-            data["image"] = image
-            yield data
+            try:
+                data = {}
+                with open(image_path.replace(".jpg", ".json"), "r") as f:
+                    data["caption"] = json.loads(f.read())["caption"]
+                data["image"] = image
+                yield data
+            except:
+                print(f"[Error!] Skipping {image_path}")
+                continue
 
 
 dataset = Dataset.from_generator(gen)
