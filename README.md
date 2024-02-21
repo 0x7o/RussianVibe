@@ -12,7 +12,7 @@ from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
 import torch
 
 pipe = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16)
-pipe.load_lora_weights("0x7o/RussianVibe-XL-v1.0")
+pipe.load_lora_weights("0x7o/RussianVibe-XL-v2.0")
 pipe.to("cuda")
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 
